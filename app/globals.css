@@ -1,26 +1,323 @@
 @import "tailwindcss";
 
+/* ===========================================================================
+   Fitness Inspired Training — design tokens: the "Blue Hour Energy" palette.
+   Ashley gave us one anchor — light blue — and asked us to build the rest.
+   So: a fresh sky blue leads (calm, capable, trustworthy), a deep blue grounds
+   it (headings, dark bands), and a warm coral supplies the ENERGY — the "go"
+   color on every call to action, the pulse in the heartbeat mark. Amber is the
+   little highlight (stars, streaks), all sitting on a cool, clean off-white.
+   Feel: energetic, personal, modern — a coach who's in it with you, not a
+   chrome-and-mirrors chain gym.
+   =========================================================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Sky blue — the primary. Her color. Calm, clean, capable. */
+  --sky: #4f9fd4;
+  --sky-deep: #2c6e9b;      /* deep blue — headings, dark accents, hovers */
+  --sky-soft: #dcebf6;      /* pale wash */
+
+  /* Coral — the energy accent. The "go" color: primary CTAs + the pulse. */
+  --coral: #f2765c;
+  --coral-deep: #d85c43;    /* richer coral for borders + hovers */
+  --coral-soft: #fbe0d9;    /* pale wash */
+
+  /* Amber — the highlight. Streaks, stars, small pops. Used sparingly. */
+  --amber: #f2b84b;
+  --amber-deep: #d9992c;
+  --amber-soft: #fbebcb;
+
+  /* Cool neutrals — the clean, airy ground. */
+  --cream: #f3f8fb;         /* page background — cool off-white */
+  --paper: #ffffff;         /* cards + lighter surfaces */
+  --charcoal: #253340;      /* headings + body — deep blue-charcoal */
+  --slate: #4a5a67;         /* muted body text */
+  --stone: #7b8a96;         /* labels, secondary text */
+  --bone: #eaf2f8;          /* text on dark bands */
+  --border: #dce6ed;        /* hairline */
+  --ink: #16222c;           /* deepest navy-black — footer + dark bands */
+
+  --background: var(--cream);
+  --foreground: var(--charcoal);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* next/font families wired up in layout.tsx */
+  --font-heading: var(--font-nunito);       /* Nunito — rounded, friendly, bold */
+  --font-body: var(--font-nunito-sans);     /* Nunito Sans — legible body */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Tailwind v4's preflight strips the button cursor — put it back. */
+button:not(:disabled),
+[role="button"] {
+  cursor: pointer;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--cream);
+  color: var(--charcoal);
+  font-family: var(--font-nunito-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-nunito), ui-rounded, system-ui, sans-serif;
+  color: var(--charcoal);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+}
+
+/* The wordmark treatment — heavy, tight, confident. */
+.wordmark {
+  font-family: var(--font-nunito), ui-rounded, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* Eyebrow label above section headings — spaced, athletic, all-caps. */
+.eyebrow {
+  font-family: var(--font-body), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--sky-deep);
+}
+.eyebrow-coral { color: var(--coral-deep); }
+.eyebrow-on-dark { color: var(--sky); }
+
+.section { padding: 5.5rem 1rem; }
+@media (max-width: 768px) { .section { padding: 3.75rem 1rem; } }
+
+/* ===========================================================================
+   Objects — the UI is built like a training plan: clean panels with an accent
+   spine, kinetic buttons that press like a rep, stat blocks, and the heartbeat
+   pulse that runs through the whole brand.
+   =========================================================================== */
+
+/* ---- Buttons: kinetic. A solid offset shadow the button presses INTO when you
+   click — a little rep of effort. Coral is the primary "go". ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  border-radius: 9999px;
+  padding: 0.85rem 1.9rem;
+  border: 2px solid transparent;
+  transition: transform 0.14s ease, box-shadow 0.14s ease, background-color 0.2s ease, color 0.2s ease;
+}
+.btn:active { transform: translate(3px, 3px); }
+
+.btn-coral {
+  color: #fff;
+  background-color: var(--coral);
+  border-color: var(--coral-deep);
+  box-shadow: 3px 3px 0 var(--coral-deep);
+}
+.btn-coral:hover { background-color: var(--coral-deep); transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--coral-deep); }
+.btn-coral:active { box-shadow: 0 0 0 var(--coral-deep); }
+
+.btn-blue {
+  color: #fff;
+  background-color: var(--sky-deep);
+  border-color: var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.btn-blue:hover { background-color: var(--ink); transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--ink); }
+.btn-blue:active { box-shadow: 0 0 0 var(--ink); }
+
+.btn-outline {
+  color: var(--sky-deep);
+  background-color: transparent;
+  border-color: var(--sky-deep);
+}
+.btn-outline:hover { background-color: var(--sky-deep); color: #fff; transform: translateY(-1px); }
+
+/* On dark bands */
+.btn-light {
+  color: var(--sky-deep);
+  background-color: var(--bone);
+  border-color: var(--bone);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.28);
+}
+.btn-light:hover { background-color: #fff; transform: translate(1px, 1px); box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.28); }
+.btn-outline-light {
+  color: var(--bone);
+  background-color: transparent;
+  border-color: rgba(234, 242, 248, 0.5);
+}
+.btn-outline-light:hover { background-color: var(--bone); color: var(--sky-deep); border-color: var(--bone); }
+
+/* ---- Panel — a clean training card that lifts on hover, with an accent spine
+   down the left edge set by --accent. ---- */
+.panel {
+  --accent: var(--sky);
+  position: relative;
+  background-color: var(--paper);
+  border: 1.5px solid var(--border);
+  border-radius: 1.1rem;
+  box-shadow: 0 12px 28px -22px rgba(37, 51, 64, 0.55);
+  transition: transform 0.22s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.22s ease, border-color 0.22s ease;
+}
+.panel:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent);
+  box-shadow: 0 22px 40px -24px rgba(37, 51, 64, 0.5);
+}
+/* the accent spine */
+.panel-spine::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 1.1rem; bottom: 1.1rem;
+  width: 4px;
+  border-radius: 9999px;
+  background-color: var(--accent);
+}
+
+/* ---- Card with a hard offset accent shadow — sturdier, for feature grids. */
+.card-hard {
+  --accent: var(--sky);
+  background-color: var(--paper);
+  border: 2px solid var(--charcoal);
+  border-radius: 1.1rem;
+  box-shadow: 5px 5px 0 var(--accent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hard:hover { transform: translateY(-4px); box-shadow: 8px 10px 0 var(--accent); }
+
+/* accent modifiers (work on .panel + .card-hard) */
+.accent-sky { --accent: var(--sky); }
+.accent-coral { --accent: var(--coral); }
+.accent-amber { --accent: var(--amber); }
+.accent-deep { --accent: var(--sky-deep); }
+
+/* ---- Chips / tags ---- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-body), sans-serif;
+  font-weight: 800;
+  font-size: 0.76rem;
+  letter-spacing: 0.01em;
+  color: var(--sky-deep);
+  background-color: var(--sky-soft);
+  border-radius: 9999px;
+  padding: 0.3rem 0.85rem;
+}
+.chip-coral { color: var(--coral-deep); background-color: var(--coral-soft); }
+.chip-amber { color: var(--amber-deep); background-color: var(--amber-soft); }
+.chip-on-dark { color: var(--bone); background-color: rgba(234, 242, 248, 0.14); }
+.chip-dot { width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: currentColor; }
+
+/* ---- Placeholder tag — makes it unmistakable a value is a stand-in. ---- */
+.placeholder-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-body), sans-serif;
+  font-weight: 800;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--amber-deep);
+  background-color: transparent;
+  border: 1.5px dashed var(--amber-deep);
+  border-radius: 9999px;
+  padding: 0.12rem 0.55rem;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* ---- Pulse divider — a hairline that flatlines then spikes at center: the
+   heartbeat, in miniature. ---- */
+.divider-pulse {
+  width: 7rem; height: 2px; border-radius: 2px;
+  background: linear-gradient(to right, transparent, var(--sky), transparent);
+  position: relative;
+}
+.divider-pulse::after {
+  content: "";
+  position: absolute; top: 50%; left: 50%;
+  width: 0.6rem; height: 0.6rem;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background: var(--coral);
+  box-shadow: 0 0 0 0.35rem var(--cream);
+}
+.divider-pulse-on-paper::after { box-shadow: 0 0 0 0.35rem var(--paper); }
+
+/* ===========================================================================
+   Signature textures
+   =========================================================================== */
+
+/* Motion lanes — faint diagonal speed lines, for the dark energy bands. */
+.lanes-dark {
+  background-image: repeating-linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.035) 0px,
+    rgba(255, 255, 255, 0.035) 2px,
+    transparent 2px,
+    transparent 26px
+  );
+}
+
+/* Dot grid — a subtle athletic-court dotting for light sections. */
+.dot-grid {
+  background-image: radial-gradient(rgba(44, 110, 155, 0.09) 1.3px, transparent 1.4px);
+  background-size: 22px 22px;
+}
+
+/* Hide scrollbars on horizontal rails. */
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* ===========================================================================
+   Animations
+   =========================================================================== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.6s ease-out forwards; opacity: 0; }
+.d-1 { animation-delay: 0.08s; }
+.d-2 { animation-delay: 0.16s; }
+.d-3 { animation-delay: 0.24s; }
+.d-4 { animation-delay: 0.32s; }
+.d-5 { animation-delay: 0.4s; }
+
+@keyframes floaty {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-9px) rotate(2deg); }
+}
+.floaty { animation: floaty 6s ease-in-out infinite; }
+.floaty-slow { animation: floaty 8.5s ease-in-out infinite; }
+
+/* The heartbeat line drawing itself in — used on the signature PulseLine. */
+@keyframes pulseDraw {
+  from { stroke-dashoffset: var(--dash, 1200); }
+  to { stroke-dashoffset: 0; }
+}
+.pulse-draw { animation: pulseDraw 2.2s ease-out forwards; }
+
+/* A soft heartbeat pulse for the logo mark's dot. */
+@keyframes beat {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.35); opacity: 0.65; }
+}
+.beat { animation: beat 1.8s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-up, .floaty, .floaty-slow, .pulse-draw, .beat {
+    animation: none;
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
 }
