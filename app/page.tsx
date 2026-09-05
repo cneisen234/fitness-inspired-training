@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { site, services, values, stats, testimonials } from '@/lib/site';
 import { PulseLine } from '@/components/PulseLine';
 import { Emblem } from '@/components/Logo';
@@ -129,17 +130,23 @@ export default function Home() {
       <section className="section" style={{ backgroundColor: 'var(--cream)' }}>
         <div className="container mx-auto px-4">
           <div className="grid gap-12 md:grid-cols-2 items-center">
-            {/* Portrait placeholder — swapped for a real photo once Ashley sends hers. */}
+            {/* Ashley */}
             <div className="order-2 md:order-1">
               <div
-                className="relative rounded-3xl overflow-hidden flex items-center justify-center"
-                style={{ aspectRatio: '4 / 5', backgroundColor: 'var(--sky-soft)', border: '2px solid var(--border)' }}
+                className="relative rounded-3xl overflow-hidden"
+                style={{ aspectRatio: '4 / 5', border: '2px solid var(--border)' }}
               >
-                <div className="text-center px-6">
-                  <Emblem width={120} color="var(--sky-deep)" className="mx-auto" />
-                  <p className="mt-4 font-extrabold" style={{ color: 'var(--sky-deep)' }}>Photo of Ashley</p>
-                  <span className="placeholder-tag mt-2">Photo coming soon</span>
-                </div>
+                <Image
+                  src="/Ashley.webp"
+                  alt="Ashley, personal trainer and owner of Fitness Inspired Training"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover"
+                  priority
+                />
+                <span className="chip chip-amber absolute left-4 bottom-4 floaty">
+                  <StarIcon size={14} /> {site.yearsExperience}+ years coaching
+                </span>
               </div>
             </div>
 
@@ -194,42 +201,38 @@ export default function Home() {
             <p className="eyebrow">In their words</p>
             <h2 className="mt-3 text-3xl md:text-5xl">Real people, real progress</h2>
             <div className="divider-pulse mx-auto mt-6" />
-            <p className="mt-6 text-sm" style={{ color: 'var(--stone)' }}>
-              Ashley&apos;s clients are sharing their own stories — the ones below are stand-ins until hers arrive.
-            </p>
           </div>
 
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {testimonials.map((t, i) => (
-              <figure key={i} className={`panel panel-spine accent-${['sky', 'coral', 'amber'][i]} p-7 flex flex-col`}>
-                <div className="flex items-center gap-1" style={{ color: 'var(--amber)' }}>
-                  {[...Array(5)].map((_, s) => (
-                    <StarIcon key={s} size={16} />
-                  ))}
-                </div>
-                <blockquote className="mt-4 text-[0.98rem] leading-relaxed flex-1" style={{ color: 'var(--charcoal)' }}>
-                  &ldquo;{t.quote}&rdquo;
-                </blockquote>
-                <figcaption className="mt-5 pt-4" style={{ borderTop: '1px solid var(--border)' }}>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-extrabold text-sm" style={{ color: 'var(--charcoal)' }}>{t.name}</span>
-                    {t.placeholder && <span className="placeholder-tag">Placeholder</span>}
+          {testimonials.length > 0 && (
+            <div className="mt-12 grid gap-6 md:grid-cols-3">
+              {testimonials.map((t, i) => (
+                <figure key={i} className={`panel panel-spine accent-${['sky', 'coral', 'amber'][i % 3]} p-7 flex flex-col`}>
+                  <div className="flex items-center gap-1" style={{ color: 'var(--amber)' }}>
+                    {[...Array(5)].map((_, s) => (
+                      <StarIcon key={s} size={16} />
+                    ))}
                   </div>
-                  <span className="text-xs" style={{ color: 'var(--stone)' }}>{t.detail}</span>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
+                  <blockquote className="mt-4 text-[0.98rem] leading-relaxed flex-1" style={{ color: 'var(--charcoal)' }}>
+                    &ldquo;{t.quote}&rdquo;
+                  </blockquote>
+                  <figcaption className="mt-5 pt-4" style={{ borderTop: '1px solid var(--border)' }}>
+                    <span className="font-extrabold text-sm block" style={{ color: 'var(--charcoal)' }}>{t.name}</span>
+                    {t.detail && <span className="text-xs" style={{ color: 'var(--stone)' }}>{t.detail}</span>}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          )}
 
           {/* Invite clients to leave their own review */}
-          <div className="mt-12 text-center">
+          <div className="mt-10 text-center">
             <p className="text-lg font-bold" style={{ color: 'var(--charcoal)' }}>
               Trained with Ashley?
             </p>
             <p className="mt-1 mb-5 text-sm" style={{ color: 'var(--slate)' }}>
               Share your experience — it helps others take the first step.
             </p>
-            <Link href="/contact#review" className="btn btn-outline">
+            <Link href="/contact#review" className="btn btn-coral">
               Leave a review
             </Link>
           </div>

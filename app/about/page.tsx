@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { site } from '@/lib/site';
 import { PulseLine } from '@/components/PulseLine';
 import { Emblem } from '@/components/Logo';
@@ -52,17 +53,20 @@ export default function About() {
       <section className="section" style={{ backgroundColor: 'var(--paper)' }}>
         <div className="container mx-auto px-4">
           <div className="grid gap-12 md:grid-cols-5 items-center">
-            {/* Portrait placeholder */}
+            {/* Ashley */}
             <div className="md:col-span-2">
               <div
-                className="relative rounded-3xl overflow-hidden flex items-center justify-center mx-auto"
-                style={{ aspectRatio: '4 / 5', maxWidth: 380, backgroundColor: 'var(--sky-soft)', border: '2px solid var(--border)' }}
+                className="relative rounded-3xl overflow-hidden mx-auto"
+                style={{ aspectRatio: '4 / 5', maxWidth: 380, border: '2px solid var(--border)' }}
               >
-                <div className="text-center px-6">
-                  <Emblem width={120} color="var(--sky-deep)" className="mx-auto" />
-                  <p className="mt-4 font-extrabold" style={{ color: 'var(--sky-deep)' }}>Photo of Ashley</p>
-                  <span className="placeholder-tag mt-2">Photo coming soon</span>
-                </div>
+                <Image
+                  src="/Ashley.webp"
+                  alt="Ashley, personal trainer and owner of Fitness Inspired Training"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 380px"
+                  className="object-cover"
+                  priority
+                />
               </div>
             </div>
 

@@ -1,15 +1,12 @@
 // ---------------------------------------------------------------------------
 // Fitness Inspired Training — single source of truth.
 //
-// Every business fact the site renders lives here. What's transcribed from the
-// discovery call with Ashley (the owner/trainer) is treated as verified; a few
-// details we don't have yet — her contact address, phone, real client
-// testimonials, social links — are marked `placeholder: true` and surfaced with
-// a visible tag so nothing invented ships silently.
+// Every business fact the site renders lives here — transcribed from the
+// discovery call with Ashley (the owner/trainer) and her logo.
 //
 // Honesty rule: we do NOT publish numbers or claims we can't back up. Ashley
 // gave us her years of experience and how she actually trains people; that's
-// what we lean on. Placeholders stay obviously provisional until she confirms.
+// what we lean on. Real client reviews land in `testimonials` as they come in.
 // ---------------------------------------------------------------------------
 
 export const site = {
@@ -30,18 +27,6 @@ export const site = {
   // A warmer paragraph for the homepage welcome + about teaser.
   blurb:
     "I'm Ashley, and I've spent the better part of a decade helping people get stronger, move better, and finally reach the goals they couldn't crack on their own. No cookie-cutter programs — every plan is built around you, whether we're training together in person or dialing it in from wherever life takes you.",
-
-  // --- Contact — NOT yet confirmed. Placeholders until Ashley sends details. ---
-  email: "hello@fitnessinspiredtraining.com",
-  emailHref: "mailto:hello@fitnessinspiredtraining.com",
-  contactPlaceholder: true,
-
-  // --- Social — unknown at time of build. ---
-  social: {
-    instagram: "",
-    facebook: "",
-    placeholder: true,
-  },
 } as const;
 
 // ---- How Ashley trains ------------------------------------------------------
@@ -137,38 +122,16 @@ export const stats: { value: string; label: string }[] = [
 ];
 
 // ---- Testimonials -----------------------------------------------------------
-// PLACEHOLDERS. Ashley has clients lined up to provide real, honest testimonials;
-// these stand-ins are clearly tagged and get swapped the moment hers arrive.
+// Real client reviews only. Add entries here as they come in through the review
+// form (or as Ashley approves them); the homepage renders whatever is present
+// and shows a "leave a review" invite when the list is empty.
 export type Testimonial = {
   quote: string;
   name: string;
-  detail: string;
-  placeholder: boolean;
+  detail?: string; // e.g. "Trained 1 year" — optional context
 };
 
-export const testimonials: Testimonial[] = [
-  {
-    quote:
-      "Ashley met me where I was and built a plan I could actually stick to. A year in, I'm lifting things I never thought I could.",
-    name: "Client testimonial",
-    detail: "Real client story coming soon",
-    placeholder: true,
-  },
-  {
-    quote:
-      "I travel constantly for work, so her online programming has been a game-changer — my workouts follow me anywhere and I still hit my goals.",
-    name: "Client testimonial",
-    detail: "Real client story coming soon",
-    placeholder: true,
-  },
-  {
-    quote:
-      "She actually watches your form and pushes you the right amount. I've never felt stronger or more confident in the gym.",
-    name: "Client testimonial",
-    detail: "Real client story coming soon",
-    placeholder: true,
-  },
-];
+export const testimonials: Testimonial[] = [];
 
 // Convenience for links used across nav + footer.
 export const navLinks = [

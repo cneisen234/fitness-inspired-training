@@ -57,9 +57,6 @@ export default function Footer() {
               <p className="text-sm leading-relaxed mb-3" style={{ color: 'rgba(234, 242, 248, 0.72)' }}>
                 Ready to start, or have a question? The contact page is the fastest way to reach me.
               </p>
-              {site.contactPlaceholder && (
-                <span className="placeholder-tag mb-3">Contact details TBD</span>
-              )}
               <div className="mt-4">
                 <Link href="/contact" className="btn btn-light text-sm">
                   Start Training

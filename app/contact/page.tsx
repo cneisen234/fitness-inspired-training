@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { site } from '@/lib/site';
 import { PulseLine } from '@/components/PulseLine';
 import { Emblem } from '@/components/Logo';
-import { Icon } from '@/components/Icons';
 import ContactForm from '@/components/ContactForm';
 
 export const metadata: Metadata = {
