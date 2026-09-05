@@ -2,9 +2,10 @@
 
 import Script from 'next/script';
 import { useState } from 'react';
+import { StarIcon } from './Icons';
 
 // reCAPTCHA v3 runs invisibly: on submit we ask Google for a token tied to the
-// "contact" action, then send it to /api/contact where the score is verified.
+// "review" action, then send it to /api/reviews where the score is verified.
 declare global {
   interface Window {
     grecaptcha?: {
@@ -16,15 +17,13 @@ declare global {
 
 const SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? '';
 
-const INTERESTS = ['In-person training', 'Online training', 'Hybrid coaching', 'Not sure yet'];
-
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
 function getToken(): Promise<string> {
   return new Promise((resolve, reject) => {
     const g = window.grecaptcha;
     if (!g || !SITE_KEY) return reject(new Error('recaptcha-unavailable'));
-    g.ready(() => g.execute(SITE_KEY, { action: 'contact' }).then(resolve).catch(reject));
+    g.ready(() => g.execute(SITE_KEY, { action: 'review' }).then(resolve).catch(reject));
   });
 }
 
@@ -38,24 +37,32 @@ const fieldStyle: React.CSSProperties = {
   fontSize: '0.95rem',
 };
 
-export default function ContactForm() {
+export default function ReviewForm() {
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState('');
+  const [rating, setRating] = useState(0);
+  const [hovered, setHovered] = useState(0);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError('');
-    setStatus('submitting');
 
+    if (rating < 1) {
+      setStatus('error');
+      setError('Please choose a star rating.');
+      return;
+    }
+
+    setStatus('submitting');
     const form = e.currentTarget;
     const data = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
 
     const payload = {
       name: data.name,
       email: data.email,
-      phone: data.phone,
-      interest: data.interest,
+      duration: data.duration,
       message: data.message,
+      rating,
       company: data.company,
     };
 
@@ -67,7 +74,7 @@ export default function ContactForm() {
         throw new Error('Spam protection isn’t ready yet. Please refresh and try again.');
       }
 
-      const res = await fetch('/api/contact', {
+      const res = await fetch('/api/reviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...payload, token }),
@@ -77,6 +84,7 @@ export default function ContactForm() {
 
       setStatus('success');
       form.reset();
+      setRating(0);
     } catch (err) {
       setStatus('error');
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
@@ -94,12 +102,13 @@ export default function ContactForm() {
             <path d="M20 6L9 17l-5-5" />
           </svg>
         </div>
-        <h3 className="mt-4 text-2xl">Message sent!</h3>
-        <p className="mt-2" style={{ color: 'var(--slate)' }}>
-          Thanks for reaching out — Ashley will get back to you soon.
+        <h3 className="mt-4 text-2xl">Thank you!</h3>
+        <p className="mt-2 max-w-sm mx-auto" style={{ color: 'var(--slate)' }}>
+          Thanks for sharing your experience — Ashley reviews each one personally before it goes
+          up on the site.
         </p>
         <button type="button" onClick={() => setStatus('idle')} className="btn btn-outline mt-6">
-          Send another
+          Leave another
         </button>
       </div>
     );
@@ -118,26 +127,46 @@ export default function ContactForm() {
             <input name="name" type="text" required autoComplete="name" placeholder="Jamie Rivera" style={fieldStyle} />
           </label>
           <label className="block">
-            <Label>Email</Label>
-            <input name="email" type="email" required autoComplete="email" placeholder="you@email.com" style={fieldStyle} />
+            <Label>Email (optional)</Label>
+            <input name="email" type="email" autoComplete="email" placeholder="you@email.com" style={fieldStyle} />
           </label>
         </div>
 
+        {/* Star rating */}
+        <div>
+          <Label>Your rating</Label>
+          <div className="flex items-center gap-1.5" onMouseLeave={() => setHovered(0)}>
+            {[1, 2, 3, 4, 5].map((n) => {
+              const on = (hovered || rating) >= n;
+              return (
+                <button
+                  key={n}
+                  type="button"
+                  aria-label={`${n} star${n > 1 ? 's' : ''}`}
+                  aria-pressed={rating === n}
+                  onMouseEnter={() => setHovered(n)}
+                  onClick={() => setRating(n)}
+                  className="p-1 transition-transform hover:scale-110"
+                  style={{ color: on ? 'var(--amber)' : 'var(--border)', lineHeight: 0 }}
+                >
+                  <StarIcon size={30} />
+                </button>
+              );
+            })}
+            {rating > 0 && (
+              <span className="ml-2 text-sm font-bold" style={{ color: 'var(--stone)' }}>{rating}/5</span>
+            )}
+          </div>
+        </div>
+
         <label className="block">
-          <Label>Phone (optional)</Label>
-          <input name="phone" type="tel" autoComplete="tel" placeholder="(555) 123-4567" style={fieldStyle} />
+          <Label>How long have you trained with Ashley? (optional)</Label>
+          <input name="duration" type="text" placeholder="e.g. About a year" style={fieldStyle} />
         </label>
+
         <label className="block">
-          <Label>I&apos;m interested in</Label>
-          <select name="interest" defaultValue={INTERESTS[0]} style={fieldStyle}>
-            {INTERESTS.map((o) => (
-              <option key={o}>{o}</option>
-            ))}
-          </select>
-        </label>
-        <label className="block">
-          <Label>Your goals</Label>
-          <textarea name="message" required rows={4} placeholder="Tell me a little about what you're hoping to work on..." style={fieldStyle} />
+          <Label>Your review</Label>
+          <textarea name="message" required rows={4} placeholder="Share how training with Ashley has gone for you..." style={fieldStyle} />
         </label>
 
         {/* Honeypot — visually hidden; bots fill it, humans don't. */}
@@ -159,8 +188,12 @@ export default function ContactForm() {
         )}
 
         <button type="submit" disabled={status === 'submitting'} className="btn btn-coral w-full text-lg" style={status === 'submitting' ? { opacity: 0.7 } : undefined}>
-          {status === 'submitting' ? 'Sending…' : 'Send message'}
+          {status === 'submitting' ? 'Sending…' : 'Submit review'}
         </button>
+
+        <p className="text-xs text-center" style={{ color: 'var(--stone)' }}>
+          Reviews are read by Ashley and published after approval.
+        </p>
 
         {!SITE_KEY && (
           <p className="text-xs text-center" style={{ color: 'var(--stone)' }}>

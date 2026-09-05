@@ -1,11 +1,16 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { site, services, values, stats, testimonials } from '@/lib/site';
+import { site, services, values, stats } from '@/lib/site';
 import { PulseLine } from '@/components/PulseLine';
 import { Emblem } from '@/components/Logo';
 import { Icon, StarIcon } from '@/components/Icons';
+import ReviewList from '@/components/ReviewList';
+import { getApprovedReviews } from '@/lib/reviews';
 
-export default function Home() {
+export const dynamic = 'force-dynamic';
+
+export default async function Home() {
+  const testimonials = await getApprovedReviews(3);
   return (
     <>
       {/* ===================== Hero ===================== */}
@@ -204,23 +209,8 @@ export default function Home() {
           </div>
 
           {testimonials.length > 0 && (
-            <div className="mt-12 grid gap-6 md:grid-cols-3">
-              {testimonials.map((t, i) => (
-                <figure key={i} className={`panel panel-spine accent-${['sky', 'coral', 'amber'][i % 3]} p-7 flex flex-col`}>
-                  <div className="flex items-center gap-1" style={{ color: 'var(--amber)' }}>
-                    {[...Array(5)].map((_, s) => (
-                      <StarIcon key={s} size={16} />
-                    ))}
-                  </div>
-                  <blockquote className="mt-4 text-[0.98rem] leading-relaxed flex-1" style={{ color: 'var(--charcoal)' }}>
-                    &ldquo;{t.quote}&rdquo;
-                  </blockquote>
-                  <figcaption className="mt-5 pt-4" style={{ borderTop: '1px solid var(--border)' }}>
-                    <span className="font-extrabold text-sm block" style={{ color: 'var(--charcoal)' }}>{t.name}</span>
-                    {t.detail && <span className="text-xs" style={{ color: 'var(--stone)' }}>{t.detail}</span>}
-                  </figcaption>
-                </figure>
-              ))}
+            <div className="mt-12">
+              <ReviewList reviews={testimonials} />
             </div>
           )}
 
@@ -232,7 +222,7 @@ export default function Home() {
             <p className="mt-1 mb-5 text-sm" style={{ color: 'var(--slate)' }}>
               Share your experience — it helps others take the first step.
             </p>
-            <Link href="/contact#review" className="btn btn-coral">
+            <Link href="/reviews" className="btn btn-coral">
               Leave a review
             </Link>
           </div>

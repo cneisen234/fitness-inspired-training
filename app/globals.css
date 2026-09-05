@@ -321,3 +321,88 @@ h1, h2, h3, h4, h5, h6 {
     stroke-dashoffset: 0;
   }
 }
+
+/* ===========================================================================
+   Blog post body — renders the sanitized HTML from the admin editor in the
+   brand's voice: Nunito headings, readable slate body, coral/sky accents.
+   =========================================================================== */
+.post-content {
+  font-family: var(--font-nunito-sans), system-ui, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--slate);
+}
+.post-content > * + * { margin-top: 1.25em; }
+.post-content h2 {
+  font-family: var(--font-nunito), sans-serif;
+  color: var(--charcoal);
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  margin-top: 1.8em;
+}
+.post-content h3 {
+  font-family: var(--font-nunito), sans-serif;
+  color: var(--charcoal);
+  font-size: 1.45rem;
+  font-weight: 800;
+  margin-top: 1.6em;
+}
+.post-content h4 {
+  font-family: var(--font-nunito), sans-serif;
+  color: var(--charcoal);
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-top: 1.4em;
+}
+.post-content p { margin: 0; }
+.post-content a {
+  color: var(--sky-deep);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.post-content a:hover { color: var(--coral-deep); }
+.post-content strong { color: var(--charcoal); font-weight: 800; }
+.post-content ul, .post-content ol { padding-left: 1.5em; }
+.post-content ul { list-style: disc; }
+.post-content ol { list-style: decimal; }
+.post-content li + li { margin-top: 0.4em; }
+.post-content blockquote {
+  border-left: 4px solid var(--coral);
+  padding: 0.2em 0 0.2em 1.1em;
+  margin-left: 0;
+  color: var(--charcoal);
+  font-style: italic;
+  font-size: 1.2rem;
+}
+.post-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 1rem;
+  border: 1.5px solid var(--border);
+  display: block;
+}
+.post-content hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--border), transparent);
+  margin: 2.4em 0;
+}
+.post-content code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+  background: var(--sky-soft);
+  border-radius: 5px;
+  padding: 1px 6px;
+  color: var(--charcoal);
+}
+.post-content pre {
+  background: var(--ink);
+  color: var(--bone);
+  border-radius: 0.9rem;
+  padding: 1.1em 1.3em;
+  overflow-x: auto;
+}
+.post-content pre code { background: none; padding: 0; color: inherit; }

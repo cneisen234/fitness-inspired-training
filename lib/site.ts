@@ -122,20 +122,15 @@ export const stats: { value: string; label: string }[] = [
 ];
 
 // ---- Testimonials -----------------------------------------------------------
-// Real client reviews only. Add entries here as they come in through the review
-// form (or as Ashley approves them); the homepage renders whatever is present
-// and shows a "leave a review" invite when the list is empty.
-export type Testimonial = {
-  quote: string;
-  name: string;
-  detail?: string; // e.g. "Trained 1 year" — optional context
-};
-
-export const testimonials: Testimonial[] = [];
+// Client reviews now live in Postgres: submitted through the reviews page, moderated
+// in the admin, and rendered from `lib/reviews.ts` (getApprovedReviews). The homepage
+// and /reviews page read approved reviews live; nothing is hard-coded here.
 
 // Convenience for links used across nav + footer.
 export const navLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
+  { href: "/blog", label: "Blog" },
+  { href: "/reviews", label: "Reviews" },
   { href: "/contact", label: "Contact" },
 ] as const;

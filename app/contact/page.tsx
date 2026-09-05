@@ -43,7 +43,7 @@ export default function Contact() {
               <div className="panel accent-coral p-7 md:p-9">
                 <h2 className="text-2xl md:text-3xl">Reach out</h2>
                 <p className="mt-2 mb-6 text-sm" style={{ color: 'var(--stone)' }}>
-                  Ask about training, or leave a review if we&apos;ve worked together. Spam protection keeps this inbox for real people only.
+                  Ask about training or say hello. Spam protection keeps this inbox for real people only.
                 </p>
                 <ContactForm />
               </div>
