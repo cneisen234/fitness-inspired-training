@@ -3,6 +3,7 @@ import { Nunito, Nunito_Sans } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import HideOnAdmin from "@/components/HideOnAdmin";
 import { site } from "@/lib/site";
 
 // Nunito — rounded, warm, confident. Headings + wordmark.
@@ -41,9 +42,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${nunito.variable} ${nunitoSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Navigation />
+        {/* Storefront chrome — hidden on the internal /admin console. */}
+        <HideOnAdmin>
+          <Navigation />
+        </HideOnAdmin>
         <main className="flex-1">{children}</main>
-        <Footer />
+        <HideOnAdmin>
+          <Footer />
+        </HideOnAdmin>
       </body>
     </html>
   );
