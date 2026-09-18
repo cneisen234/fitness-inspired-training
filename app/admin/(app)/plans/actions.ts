@@ -110,11 +110,6 @@ export async function updatePlan(form: FormData): Promise<void> {
   return persistPlan(form, null);
 }
 
-// Activate → saves the current edits, then makes it live (syncing a price if needed).
-export async function saveAndActivate(form: FormData): Promise<void> {
-  return persistPlan(form, true);
-}
-
 // Deactivate → saves the current edits, then hides it.
 export async function saveAndDeactivate(form: FormData): Promise<void> {
   return persistPlan(form, false);
