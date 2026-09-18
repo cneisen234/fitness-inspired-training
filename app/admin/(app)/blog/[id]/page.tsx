@@ -6,7 +6,7 @@ import { posts } from "@/lib/db/schema";
 import PostEditor from "./post-editor";
 import CoverImage from "./cover-image";
 import ConfirmDelete from "../../confirm-delete";
-import { EyeIcon, EyeOffIcon, ExternalLinkIcon, SaveIcon, TrashIcon } from "../../icons";
+import { ExternalLinkIcon, SaveIcon, TrashIcon } from "../../icons";
 import { publishPost, unpublishPost, updateSlug, deletePost } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -56,15 +56,15 @@ export default async function EditPostPage({
           {isPublished ? (
             <form action={unpublishPost} className="admin-inline-form">
               <input type="hidden" name="id" value={post.id} />
-              <button type="submit" className="admin-btn sm ghost" aria-label="Unpublish" title="Unpublish">
-                <EyeOffIcon />
+              <button type="submit" className="admin-btn sm ghost">
+                Unpublish
               </button>
             </form>
           ) : (
             <form action={publishPost} className="admin-inline-form">
               <input type="hidden" name="id" value={post.id} />
-              <button type="submit" className="admin-btn sm" aria-label="Publish" title="Publish">
-                <EyeIcon />
+              <button type="submit" className="admin-btn sm">
+                Publish
               </button>
             </form>
           )}
