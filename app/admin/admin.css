@@ -556,6 +556,42 @@ textarea.admin-input { resize: vertical; }
   flex: 0 0 auto;
 }
 
+/* ===== Full-screen loading overlay (e.g. plan save + Stripe sync) ===== */
+.admin-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(243, 248, 251, 0.82);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+.admin-loading-overlay p {
+  margin: 0;
+  font-family: var(--font-nunito), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--charcoal);
+}
+.admin-spinner {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 4px solid var(--coral-soft);
+  border-top-color: var(--coral);
+  animation: admin-spin 0.7s linear infinite;
+}
+@keyframes admin-spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-spinner { animation-duration: 1.8s; }
+}
+
 /* ===== Reviews moderation ===== */
 .admin-review-head {
   display: flex;
@@ -901,4 +937,25 @@ textarea.admin-input { resize: vertical; }
   .admin-toast { animation: none; }
   .admin-shell input[type="checkbox"],
   .admin-shell input[type="checkbox"]::before { transition: none; }
+}
+
+/* Plans list on mobile: Order arrows sit bottom-left, actions bottom-right. */
+@media (max-width: 640px) {
+  .admin-table.plan-cards tr {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .admin-table.plan-cards td {
+    flex: 0 0 100%;
+  }
+  .admin-table.plan-cards td[data-label="Order"] {
+    flex: 1 1 auto;
+    padding-top: 10px;
+  }
+  .admin-table.plan-cards td[data-label="Order"]::before {
+    display: none;
+  }
+  .admin-table.plan-cards td:last-child {
+    flex: 0 0 auto;
+  }
 }

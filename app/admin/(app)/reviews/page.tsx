@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { reviews } from "@/lib/db/schema";
 import { StarIcon } from "@/components/Icons";
 import ConfirmDelete from "../confirm-delete";
-import { CheckIcon } from "../icons";
+import { CheckIcon, EyeOffIcon, TrashIcon, XIcon } from "../icons";
 import {
   approveReview,
   rejectReview,
@@ -94,17 +94,18 @@ export default async function AdminReviewsPage() {
           <ReviewCard key={r.id} r={r}>
             <form action={approveReview} className="admin-inline-form">
               <input type="hidden" name="id" value={r.id} />
-              <button type="submit" className="admin-btn sm">
-                <CheckIcon /> Approve
+              <button type="submit" className="admin-btn sm" aria-label="Approve" title="Approve">
+                <CheckIcon />
               </button>
             </form>
             <ConfirmDelete
               action={rejectReview}
               fields={{ id: r.id }}
               title={`Reject ${r.name}’s review?`}
-              message="Rejecting permanently deletes this submission. This can’t be undone."
+              message="This action can't be undone."
               triggerClass="admin-btn sm danger"
-              triggerLabel="Reject"
+              triggerLabel={<XIcon />}
+              triggerAriaLabel="Reject"
               confirmLabel="Reject & delete"
             />
           </ReviewCard>
@@ -152,17 +153,18 @@ export default async function AdminReviewsPage() {
             <span className="spacer" />
             <form action={unpublishReview} className="admin-inline-form">
               <input type="hidden" name="id" value={r.id} />
-              <button type="submit" className="admin-btn sm ghost">
-                Unpublish
+              <button type="submit" className="admin-btn sm ghost" aria-label="Unpublish" title="Unpublish">
+                <EyeOffIcon />
               </button>
             </form>
             <ConfirmDelete
               action={deleteReview}
               fields={{ id: r.id }}
               title={`Delete ${r.name}’s review?`}
-              message="This permanently removes the review from the site. This can’t be undone."
+              message="This action can't be undone."
               triggerClass="admin-btn sm danger"
-              triggerLabel="Delete"
+              triggerLabel={<TrashIcon />}
+              triggerAriaLabel="Delete"
             />
           </ReviewCard>
         ))

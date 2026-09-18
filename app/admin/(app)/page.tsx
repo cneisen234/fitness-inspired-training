@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { count, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { posts, reviews } from "@/lib/db/schema";
+import { posts, reviews, purchases } from "@/lib/db/schema";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  const [published, drafts, pending, approved] = await Promise.all([
+  const [published, drafts, pending, approved, paidPurchases] = await Promise.all([
     db.select({ c: count() }).from(posts).where(eq(posts.status, "published")),
     db.select({ c: count() }).from(posts).where(eq(posts.status, "draft")),
     db.select({ c: count() }).from(reviews).where(eq(reviews.status, "pending")),
     db.select({ c: count() }).from(reviews).where(eq(reviews.status, "approved")),
+    db.select({ c: count() }).from(purchases).where(eq(purchases.status, "paid")),
   ]);
 
   const pendingCount = pending[0]?.c ?? 0;
@@ -45,6 +46,10 @@ export default async function AdminDashboard() {
           <div className="n">{approved[0]?.c ?? 0}</div>
           <div className="l">Approved reviews</div>
         </div>
+        <div className="admin-stat">
+          <div className="n">{paidPurchases[0]?.c ?? 0}</div>
+          <div className="l">Plan purchases</div>
+        </div>
       </div>
 
       <div className="admin-card">
@@ -57,10 +62,6 @@ export default async function AdminDashboard() {
             Review submissions
           </Link>
         </div>
-        <p className="admin-stub" style={{ margin: "14px 0 0" }}>
-          Write and publish posts, and approve or reject client reviews. Subscription
-          plans (Stripe) arrive in Phase 2.
-        </p>
       </div>
     </>
   );

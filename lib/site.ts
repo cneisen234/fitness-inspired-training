@@ -130,6 +130,7 @@ export const stats: { value: string; label: string }[] = [
 export const navLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
+  { href: "/plans", label: "Plans" },
   { href: "/blog", label: "Blog" },
   { href: "/reviews", label: "Reviews" },
   { href: "/contact", label: "Contact" },

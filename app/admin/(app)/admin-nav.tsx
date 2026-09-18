@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// Plans (subscriptions) arrives in Phase 2 — add it here then.
 const items = [
   { href: "/admin", label: "Dashboard", exact: true },
   { href: "/admin/blog", label: "Blog" },
   { href: "/admin/reviews", label: "Reviews" },
+  { href: "/admin/plans", label: "Plans" },
+  { href: "/admin/purchases", label: "Purchases" },
 ];
 
 export default function AdminNav() {

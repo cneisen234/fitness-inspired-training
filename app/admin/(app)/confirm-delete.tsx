@@ -1,10 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 // Branded confirm dialog for destructive actions. Renders a trigger button; on
 // click it opens an in-app modal, and only on Confirm does it submit the given
 // server action. No window.confirm / alert.
+//
+// The modal is portaled to <body>, so the confirm <form> is never nested inside
+// a parent form (the trigger can live inside another form as a plain button).
 
 type Props = {
   action: (formData: FormData) => void | Promise<void>;
@@ -51,14 +55,15 @@ export default function ConfirmDelete({
       >
         {triggerLabel}
       </button>
-      {open && (
-        <div className="admin-modal-backdrop">
-          <div
-            className="admin-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-label={title}
-          >
+      {open &&
+        createPortal(
+          <div className="admin-modal-backdrop">
+            <div
+              className="admin-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-label={title}
+            >
             <h3 className="admin-modal-title">{title}</h3>
             {message && <p className="admin-modal-msg">{message}</p>}
             <div className="admin-modal-actions">
@@ -79,9 +84,10 @@ export default function ConfirmDelete({
                 </button>
               </form>
             </div>
-          </div>
-        </div>
-      )}
+            </div>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

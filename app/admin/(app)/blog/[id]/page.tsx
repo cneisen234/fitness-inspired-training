@@ -6,6 +6,7 @@ import { posts } from "@/lib/db/schema";
 import PostEditor from "./post-editor";
 import CoverImage from "./cover-image";
 import ConfirmDelete from "../../confirm-delete";
+import { EyeIcon, EyeOffIcon, ExternalLinkIcon, SaveIcon, TrashIcon } from "../../icons";
 import { publishPost, unpublishPost, updateSlug, deletePost } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -46,22 +47,24 @@ export default async function EditPostPage({
               target="_blank"
               rel="noreferrer"
               className="admin-btn sm ghost"
+              aria-label="View on site"
+              title="View on site"
             >
-              View on site ↗
+              <ExternalLinkIcon />
             </a>
           )}
           {isPublished ? (
             <form action={unpublishPost} className="admin-inline-form">
               <input type="hidden" name="id" value={post.id} />
-              <button type="submit" className="admin-btn sm ghost">
-                Unpublish
+              <button type="submit" className="admin-btn sm ghost" aria-label="Unpublish" title="Unpublish">
+                <EyeOffIcon />
               </button>
             </form>
           ) : (
             <form action={publishPost} className="admin-inline-form">
               <input type="hidden" name="id" value={post.id} />
-              <button type="submit" className="admin-btn sm">
-                Publish
+              <button type="submit" className="admin-btn sm" aria-label="Publish" title="Publish">
+                <EyeIcon />
               </button>
             </form>
           )}
@@ -99,27 +102,24 @@ export default async function EditPostPage({
       {/* URL slug */}
       <div className="admin-card">
         <h2 className="admin-h2">Link (URL slug)</h2>
-        <form action={updateSlug} className="admin-grid2" style={{ alignItems: "end" }}>
+        <form action={updateSlug}>
           <input type="hidden" name="id" value={post.id} />
-          <label className="admin-field">
+          <div className="admin-field">
             <span>This post lives at /blog/…</span>
-            <input
-              name="slug"
-              className="admin-input"
-              defaultValue={post.slug}
-              placeholder="my-post"
-            />
-          </label>
-          <div>
-            <button type="submit" className="admin-btn ghost">
-              Save link
-            </button>
+            <div style={{ display: "flex", gap: 10 }}>
+              <input
+                name="slug"
+                className="admin-input"
+                defaultValue={post.slug}
+                placeholder="my-post"
+                style={{ flex: 1 }}
+              />
+              <button type="submit" className="admin-btn ghost" aria-label="Save link" title="Save link">
+                <SaveIcon />
+              </button>
+            </div>
           </div>
         </form>
-        <p className="admin-stub" style={{ margin: "10px 0 0" }}>
-          Letters, numbers, and hyphens only — anything else is cleaned up
-          automatically, and duplicates get a number appended.
-        </p>
       </div>
 
       {/* Danger zone */}
@@ -133,8 +133,9 @@ export default async function EditPostPage({
             action={deletePost}
             fields={{ id: post.id }}
             title={`Delete “${post.title}”?`}
-            message="This permanently removes the post and its cover image. This can’t be undone."
-            triggerLabel="Delete post"
+            message="This action can't be undone."
+            triggerLabel={<TrashIcon />}
+            triggerAriaLabel="Delete post"
           />
         </div>
       </div>
