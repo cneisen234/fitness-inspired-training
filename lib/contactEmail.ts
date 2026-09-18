@@ -139,7 +139,7 @@ export function buildContactText(p: ContactFields): string {
     p.message,
     '',
     '—',
-    'Sent from the contact form at fitnessinspiredtraining.com',
+    'Sent from the contact form at fitnessinspiredpersonaltraining.com',
     'Reply directly to this email to respond to the sender.',
   ].join('\n');
 }
@@ -167,7 +167,7 @@ export function buildContactHtml(p: ContactFields): string {
     heading: 'You&rsquo;ve got a new message',
     intro: 'Someone reached out through your website. Here are their details:',
     body,
-    footer: `Sent from the contact form at fitnessinspiredtraining.com. You can reply directly to this email &mdash; it goes straight to ${name}.`,
+    footer: `Sent from the contact form at fitnessinspiredpersonaltraining.com. You can reply directly to this email &mdash; it goes straight to ${name}.`,
   });
 }
 
@@ -192,7 +192,7 @@ export function buildReviewText(p: ReviewFields): string {
     p.message,
     '',
     '—',
-    'Sent from the review form at fitnessinspiredtraining.com',
+    'Sent from the review form at fitnessinspiredpersonaltraining.com',
   ].join('\n');
 }
 
@@ -227,6 +227,6 @@ export function buildReviewHtml(p: ReviewFields): string {
       ? 'A client left a review and gave the okay to feature it on your website.'
       : 'A client left a review. They did not grant permission to publish it — reach out before featuring it.',
     body,
-    footer: 'Sent from the review form at fitnessinspiredtraining.com.',
+    footer: 'Sent from the review form at fitnessinspiredpersonaltraining.com.',
   });
 }

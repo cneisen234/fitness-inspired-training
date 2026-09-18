@@ -86,7 +86,7 @@ export function buildPurchaseAdminText(p: PurchaseFields): string {
     "Reach out to set them up in Everfit.",
     "",
     "—",
-    "Sent from the plans checkout at fitnessinspiredtraining.com",
+    "Sent from the plans checkout at fitnessinspiredpersonaltraining.com",
   ].join("\n");
 }
 
@@ -107,7 +107,7 @@ export function buildPurchaseAdminHtml(p: PurchaseFields): string {
     heading: "You&rsquo;ve got a new client",
     intro: "Someone just bought a plan. Reach out to get them set up in Everfit:",
     body,
-    footer: "Sent from the plans checkout at fitnessinspiredtraining.com.",
+    footer: "Sent from the plans checkout at fitnessinspiredpersonaltraining.com.",
   });
 }
 

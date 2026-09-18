@@ -1,11 +1,10 @@
-// Stripe webhook — records purchases and fires fulfillment emails. Signature-
-// verified against STRIPE_WEBHOOK_SECRET using the RAW request body. This route
-// is public (Stripe calls it) and intentionally NOT under the auth proxy matcher;
+// Stripe webhook — the source of truth for recording purchases + firing
+// fulfillment emails. Signature-verified against STRIPE_WEBHOOK_SECRET using the
+// RAW request body. Public route, intentionally NOT under the auth proxy matcher;
 // the signature check is the gate.
 //
 // Handled events:
-//  - payment_intent.succeeded → record a purchase (idempotent) + email Ashley
-//    and the buyer.
+//  - payment_intent.succeeded → record a purchase (idempotent) + email Ashley + buyer.
 //  - charge.refunded          → flip the matching purchase to `refunded`.
 
 import type Stripe from "stripe";
@@ -46,8 +45,7 @@ export async function POST(req: Request) {
     }
   } catch (err) {
     console.error("[stripe webhook] handler error:", err);
-    // 500 → Stripe retries later.
-    return new Response("Handler error", { status: 500 });
+    return new Response("Handler error", { status: 500 }); // Stripe retries
   }
 
   return new Response(null, { status: 200 });
@@ -62,7 +60,7 @@ async function handleSucceeded(pi: Stripe.PaymentIntent) {
   const email = pi.receipt_email || m.customerEmail || "";
   const name = m.customerName || null;
 
-  // Idempotent: the unique payment-intent id means a redelivered event inserts nothing.
+  // Idempotent: the unique PaymentIntent id means a redelivered event inserts nothing.
   const inserted = await db
     .insert(purchases)
     .values({
@@ -87,7 +85,7 @@ async function handleSucceeded(pi: Stripe.PaymentIntent) {
     note: note ?? undefined,
   };
 
-  // Notify Ashley (a send failure must not fail the webhook — the purchase is saved).
+  // A send failure must not fail the webhook — the purchase is saved.
   await sendEmail({
     subject: `New plan purchase: ${planName} — ${formatCents(amountPaidCents)}`,
     text: buildPurchaseAdminText(fields),
@@ -95,7 +93,6 @@ async function handleSucceeded(pi: Stripe.PaymentIntent) {
     replyTo: email ? { email, name: name ?? email } : undefined,
   }).catch((e) => console.error("[stripe webhook] admin email failed:", e));
 
-  // Confirm to the buyer.
   if (email) {
     await sendEmail({
       to: email,
