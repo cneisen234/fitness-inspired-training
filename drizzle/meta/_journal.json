@@ -22,6 +22,13 @@
       "when": 1789730181114,
       "tag": "0002_fat_dorian_gray",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789733931623,
+      "tag": "0003_fearless_stingray",
+      "breakpoints": true
     }
   ]
 }

@@ -121,8 +121,8 @@ export const purchases = pgTable(
   "purchases",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    stripeCheckoutSessionId: text("stripe_checkout_session_id").notNull(),
-    stripePaymentIntentId: text("stripe_payment_intent_id"),
+    // The PaymentIntent is the payment + idempotency key (branded on-site checkout).
+    stripePaymentIntentId: text("stripe_payment_intent_id").notNull(),
     planId: uuid("plan_id").references(() => plans.id, { onDelete: "set null" }),
     // Snapshots — frozen at purchase time.
     planName: text("plan_name").notNull(),
@@ -134,9 +134,8 @@ export const purchases = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
-    uniqueIndex("purchases_session_key").on(t.stripeCheckoutSessionId),
+    uniqueIndex("purchases_payment_intent_key").on(t.stripePaymentIntentId),
     index("purchases_created_idx").on(t.createdAt),
-    index("purchases_payment_intent_idx").on(t.stripePaymentIntentId),
   ],
 );
 

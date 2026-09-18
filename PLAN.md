@@ -148,7 +148,7 @@ the success page.
   editing/deleting a plan never rewrites a past receipt. Migration.
 - `app/api/stripe/webhook/route.ts` — **signature-verified** with `STRIPE_WEBHOOK_SECRET` (raw body;
   its own route, not under the auth proxy). Handle:
-  - `checkout.session.completed` → idempotently insert a `purchases` row (dedupe on session id) →
+  - `payment_intent.succeeded` → idempotently insert a `purchases` row (dedupe on PaymentIntent id) →
     **email Ashley** (buyer name, email, package, goals/notes) so she can reach out + build the
     Everfit link, and a **confirmation email to the buyer** (via `lib/sendgrid.ts`).
   - `charge.refunded` → flip that purchase's `status` to `refunded`.
@@ -174,7 +174,7 @@ Preview if used). Full list — all currently in `.env.example`:
   Stripe environment, Ashley re-syncs her plans in the admin (creates live Products/Prices), OR we
   re-create them. Set `NEXT_PUBLIC_SITE_URL` to the real domain.
 - **Production webhook:** Stripe Dashboard → Developers → Webhooks → add endpoint
-  `https://<domain>/api/stripe/webhook`, subscribe to `checkout.session.completed` +
+  `https://<domain>/api/stripe/webhook`, subscribe to `payment_intent.succeeded` +
   `charge.refunded`, copy its **signing secret** into Vercel as `STRIPE_WEBHOOK_SECRET`.
 - **Migrations run automatically on deploy** — `package.json` has a `vercel-build` script
   (`drizzle-kit migrate && next build`) that Vercel runs instead of `build`, so every push applies
@@ -236,13 +236,13 @@ return URLs)* *(P2)*. Reuses existing `SENDGRID_*`, `CONTACT_TO_EMAIL`, `*RECAPT
       Run `npm run db:migrate`, then test with the Stripe **test** keys already in `.env.local`.
 - [~] Step 8 — Public plans page + one-time checkout — **code complete, typecheck + lint clean**.
       `/plans` renders active plans (price, features) with **Get this plan** → `startCheckout`
-      server action → Stripe Checkout in **payment mode** (server trusts DB price; collects email +
-      optional goals custom field; `metadata.planId`). `/plans/success` (retrieves session to
-      personalize) + `/plans/cancelled`. "Plans" added to site nav. Needs runtime test with a test
-      card (`4242…`).
+      → `/plans/checkout` **branded on-site checkout** (Stripe Payment Element + deferred
+      PaymentIntent; server trusts DB price; collects name/email/goals in our own fields).
+      `/plans/success` (retrieves the PaymentIntent to personalize). "Plans" in site nav. Needs a
+      test-card run (`4242…`).
 - [~] Step 9 — Webhook, purchases, fulfillment — **code complete, typecheck + lint clean, migration
       generated (`0002`)**. `purchases` table (snapshots plan name + amount; planId set-null on plan
-      delete). Signature-verified `/api/stripe/webhook`: `checkout.session.completed` → idempotent
+      delete). Signature-verified `/api/stripe/webhook`: `payment_intent.succeeded` → idempotent
       insert + email Ashley + confirm buyer; `charge.refunded` → status refunded. Admin
       `/admin/purchases` (read-only) + "Purchases" nav + dashboard count. Run `npm run db:migrate`;
       dev webhook via `stripe listen` → `STRIPE_WEBHOOK_SECRET` in `.env.local`.

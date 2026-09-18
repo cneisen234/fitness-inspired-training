@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
+    "@stripe/react-stripe-js": "^6.10.0",
+    "@stripe/stripe-js": "^9.16.0",
     "@tiptap/extension-image": "^3.31.3",
     "@tiptap/extension-link": "^3.31.3",
     "@tiptap/pm": "^3.31.3",

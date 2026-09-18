@@ -6,7 +6,6 @@ import { plans } from "@/lib/db/schema";
 import { site } from "@/lib/site";
 import { formatCents } from "@/lib/money";
 import { PulseLine } from "@/components/PulseLine";
-import { startCheckout } from "./actions";
 
 export const metadata: Metadata = {
   title: "Training Plans",
@@ -135,12 +134,12 @@ export default async function PlansPage({
                     </ul>
                   )}
 
-                  <form action={startCheckout} className="mt-7">
-                    <input type="hidden" name="planId" value={p.id} />
-                    <button type="submit" className="btn btn-coral w-full text-lg">
-                      Get this plan
-                    </button>
-                  </form>
+                  <Link
+                    href={`/plans/checkout?plan=${p.id}`}
+                    className="btn btn-coral w-full text-lg mt-7"
+                  >
+                    Get this plan
+                  </Link>
                 </div>
               ))}
             </div>

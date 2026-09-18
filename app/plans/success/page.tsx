@@ -14,19 +14,19 @@ export const dynamic = "force-dynamic";
 export default async function CheckoutSuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ session_id?: string }>;
+  searchParams: Promise<{ payment_intent?: string }>;
 }) {
-  const { session_id } = await searchParams;
+  const { payment_intent } = await searchParams;
 
-  // Best-effort: confirm the session and personalize. Never block the thank-you
-  // on a Stripe hiccup — the webhook (Step 9) is the source of truth for orders.
+  // Best-effort: read the PaymentIntent to personalize. Never block the thank-you
+  // on a Stripe hiccup — the webhook is the source of truth for orders.
   let email: string | null = null;
   let planName: string | null = null;
-  if (session_id) {
+  if (payment_intent) {
     try {
-      const s = await stripe().checkout.sessions.retrieve(session_id);
-      email = s.customer_details?.email ?? null;
-      planName = (s.metadata?.planName as string | undefined) ?? null;
+      const pi = await stripe().paymentIntents.retrieve(payment_intent);
+      email = pi.receipt_email ?? (pi.metadata?.customerEmail as string | undefined) ?? null;
+      planName = (pi.metadata?.planName as string | undefined) ?? null;
     } catch {
       // ignore
     }

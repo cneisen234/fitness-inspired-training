@@ -4,9 +4,9 @@
 // the signature check is the gate.
 //
 // Handled events:
-//  - checkout.session.completed → record a purchase (idempotent) + email Ashley
+//  - payment_intent.succeeded → record a purchase (idempotent) + email Ashley
 //    and the buyer.
-//  - charge.refunded            → flip the matching purchase to `refunded`.
+//  - charge.refunded          → flip the matching purchase to `refunded`.
 
 import type Stripe from "stripe";
 import { eq } from "drizzle-orm";
@@ -39,8 +39,8 @@ export async function POST(req: Request) {
   }
 
   try {
-    if (event.type === "checkout.session.completed") {
-      await handleCompleted(event.data.object as Stripe.Checkout.Session);
+    if (event.type === "payment_intent.succeeded") {
+      await handleSucceeded(event.data.object as Stripe.PaymentIntent);
     } else if (event.type === "charge.refunded") {
       await handleRefunded(event.data.object as Stripe.Charge);
     }
@@ -53,27 +53,20 @@ export async function POST(req: Request) {
   return new Response(null, { status: 200 });
 }
 
-async function handleCompleted(session: Stripe.Checkout.Session) {
-  if (session.payment_status !== "paid") return;
+async function handleSucceeded(pi: Stripe.PaymentIntent) {
+  const m = pi.metadata ?? {};
+  const planName = m.planName || "Plan";
+  const planId = m.planId || null;
+  const note = m.customerNote || null;
+  const amountPaidCents = pi.amount_received || pi.amount || 0;
+  const email = pi.receipt_email || m.customerEmail || "";
+  const name = m.customerName || null;
 
-  const note =
-    session.custom_fields?.find((f) => f.key === "goals")?.text?.value || null;
-  const planName = (session.metadata?.planName as string | undefined) || "Plan";
-  const planId = (session.metadata?.planId as string | undefined) || null;
-  const amountPaidCents = session.amount_total ?? 0;
-  const email = session.customer_details?.email ?? "";
-  const name = session.customer_details?.name ?? null;
-  const paymentIntentId =
-    typeof session.payment_intent === "string"
-      ? session.payment_intent
-      : (session.payment_intent?.id ?? null);
-
-  // Idempotent: the unique session id means a redelivered event inserts nothing.
+  // Idempotent: the unique payment-intent id means a redelivered event inserts nothing.
   const inserted = await db
     .insert(purchases)
     .values({
-      stripeCheckoutSessionId: session.id,
-      stripePaymentIntentId: paymentIntentId,
+      stripePaymentIntentId: pi.id,
       planId,
       planName,
       amountPaidCents,
@@ -81,7 +74,7 @@ async function handleCompleted(session: Stripe.Checkout.Session) {
       customerEmail: email,
       customerNote: note,
     })
-    .onConflictDoNothing({ target: purchases.stripeCheckoutSessionId })
+    .onConflictDoNothing({ target: purchases.stripePaymentIntentId })
     .returning({ id: purchases.id });
 
   if (inserted.length === 0) return; // already processed

@@ -22,13 +22,13 @@ export async function createPlan(form: FormData): Promise<void> {
     .values({ name, sort: c })
     .returning({ id: plans.id });
   await flashToast("Plan created");
-  // Stripe sync happens on first Save (once it has a price).
   redirect(`/admin/plans/${row.id}`);
 }
 
-// ---- update (+ Stripe sync) ----
-
-export async function updatePlan(form: FormData): Promise<void> {
+// ---- save (+ Stripe sync), shared by Save / Activate / Deactivate ----
+// forceActive: null = auto (live when it has a synced price), true = try to make
+// live, false = hide. Save always persists the current field values first.
+async function persistPlan(form: FormData, forceActive: boolean | null): Promise<void> {
   await requireAdmin();
   const id = field(form, "id");
   if (!id) return;
@@ -50,36 +50,29 @@ export async function updatePlan(form: FormData): Promise<void> {
 
   try {
     const s = stripe();
-    // Product: create on first sync, otherwise keep name/description in step.
     if (!stripeProductId) {
-      const product = await s.products.create({
-        name,
-        description: description || undefined,
-      });
+      const product = await s.products.create({ name, description: description || undefined });
       stripeProductId = product.id;
     } else {
-      await s.products.update(stripeProductId, {
-        name,
-        description: description || undefined,
-      });
+      await s.products.update(stripeProductId, { name, description: description || undefined });
     }
-
-    // Price: immutable in Stripe — create a new one-time Price and archive the
-    // old whenever the amount changes (or none exists yet). Skip when price is 0.
+    // Stripe Prices are immutable — rotate to a new one-time Price when the amount
+    // changes (or none exists yet). Skip when the price is 0.
     if (priceCents > 0 && (priceCents !== existing.priceCents || !stripePriceId)) {
       const price = await s.prices.create({
         product: stripeProductId,
         unit_amount: priceCents,
         currency: "usd",
       });
-      if (stripePriceId) {
-        await s.prices.update(stripePriceId, { active: false }).catch(() => {});
-      }
+      if (stripePriceId) await s.prices.update(stripePriceId, { active: false }).catch(() => {});
       stripePriceId = price.id;
     }
   } catch (e) {
     syncError = e instanceof Error ? e.message : "Stripe sync failed";
   }
+
+  const canBeActive = priceCents > 0 && !!stripePriceId;
+  const active = forceActive === null ? canBeActive : forceActive && canBeActive;
 
   await db
     .update(plans)
@@ -91,46 +84,40 @@ export async function updatePlan(form: FormData): Promise<void> {
       priceCents,
       stripeProductId,
       stripePriceId,
-      // Saving a plan with a valid, synced price makes it live automatically;
-      // without a price (or if the Stripe sync failed) it stays inactive.
-      active: priceCents > 0 && !!stripePriceId,
+      active,
       updatedAt: new Date(),
     })
     .where(eq(plans.id, id));
 
-  await flashToast(
-    syncError ? `Saved, but Stripe sync failed: ${syncError}` : "Plan saved",
-  );
-  revalidatePath("/admin/plans");
-  revalidatePath(`/admin/plans/${id}`);
-}
-
-// ---- activate / deactivate ----
-
-export async function activatePlan(form: FormData): Promise<void> {
-  await requireAdmin();
-  const id = field(form, "id");
-  if (!id) return;
-  const [plan] = await db.select().from(plans).where(eq(plans.id, id));
-  if (!plan) return;
-  if (!plan.stripePriceId || plan.priceCents <= 0) {
-    await flashToast("Set a price and save before activating.");
-    return;
+  if (syncError) {
+    await flashToast(`Saved, but Stripe sync failed: ${syncError}`);
+  } else if (forceActive && !canBeActive) {
+    await flashToast("Add a price to make this plan live");
+  } else if (active) {
+    await flashToast("Plan saved & live");
+  } else if (forceActive === false) {
+    await flashToast("Plan saved & hidden");
+  } else {
+    await flashToast("Plan saved — add a price to sell it");
   }
-  await db.update(plans).set({ active: true, updatedAt: new Date() }).where(eq(plans.id, id));
-  await flashToast("Plan is live");
+
   revalidatePath("/admin/plans");
   revalidatePath(`/admin/plans/${id}`);
 }
 
-export async function deactivatePlan(form: FormData): Promise<void> {
-  await requireAdmin();
-  const id = field(form, "id");
-  if (!id) return;
-  await db.update(plans).set({ active: false, updatedAt: new Date() }).where(eq(plans.id, id));
-  await flashToast("Plan hidden");
-  revalidatePath("/admin/plans");
-  revalidatePath(`/admin/plans/${id}`);
+// Save → auto-activates when it has a synced price (per product spec).
+export async function updatePlan(form: FormData): Promise<void> {
+  return persistPlan(form, null);
+}
+
+// Activate → saves the current edits, then makes it live (syncing a price if needed).
+export async function saveAndActivate(form: FormData): Promise<void> {
+  return persistPlan(form, true);
+}
+
+// Deactivate → saves the current edits, then hides it.
+export async function saveAndDeactivate(form: FormData): Promise<void> {
+  return persistPlan(form, false);
 }
 
 // ---- reorder ----
@@ -166,8 +153,6 @@ export async function deletePlan(form: FormData): Promise<void> {
   const [plan] = await db.select().from(plans).where(eq(plans.id, id));
   if (!plan) return;
 
-  // Archive the Stripe Product + Price so nothing new can be bought, but keep the
-  // records in Stripe for past-purchase history.
   if (plan.stripeProductId) {
     const s = stripe();
     if (plan.stripePriceId) {

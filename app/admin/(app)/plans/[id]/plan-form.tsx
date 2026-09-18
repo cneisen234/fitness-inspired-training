@@ -2,13 +2,22 @@
 
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
-import { deletePlan, updatePlan } from "../actions";
+import { deletePlan, saveAndActivate, saveAndDeactivate, updatePlan } from "../actions";
 import { centsToDollars } from "@/lib/money";
 import ConfirmDelete from "../../confirm-delete";
 import { PlusIcon, SaveIcon, TrashIcon } from "../../icons";
 
+type Plan = {
+  id: string;
+  name: string;
+  tagline: string | null;
+  description: string | null;
+  priceCents: number;
+  features: string[];
+  active: boolean;
+};
+
 // Full-screen loading state shown while the plan saves AND syncs to Stripe.
-// Rendered inside the <form>, so useFormStatus reflects that submission.
 function SavingOverlay() {
   const { pending } = useFormStatus();
   if (!pending) return null;
@@ -20,29 +29,28 @@ function SavingOverlay() {
   );
 }
 
-function SaveButton() {
+// Save (default action = updatePlan) + the Activate/Deactivate toggle, which
+// submit the SAME form to a different action via formAction — so they persist the
+// current field edits, not just flip a flag.
+function FormButtons({ active }: { active: boolean }) {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      className="admin-btn"
-      disabled={pending}
-      aria-label="Save plan"
-      title="Save plan"
-    >
-      <SaveIcon />
-    </button>
+    <>
+      <button type="submit" className="admin-btn" disabled={pending} aria-label="Save plan" title="Save plan">
+        <SaveIcon />
+      </button>
+      {active ? (
+        <button type="submit" formAction={saveAndDeactivate} className="admin-btn ghost" disabled={pending}>
+          Deactivate
+        </button>
+      ) : (
+        <button type="submit" formAction={saveAndActivate} className="admin-btn blue" disabled={pending}>
+          Activate
+        </button>
+      )}
+    </>
   );
 }
-
-type Plan = {
-  id: string;
-  name: string;
-  tagline: string | null;
-  description: string | null;
-  priceCents: number;
-  features: string[];
-};
 
 export default function PlanForm({ plan }: { plan: Plan }) {
   const [features, setFeatures] = useState<string[]>(
@@ -138,7 +146,7 @@ export default function PlanForm({ plan }: { plan: Plan }) {
       </div>
 
       <div className="admin-actions">
-        <SaveButton />
+        <FormButtons active={plan.active} />
         <ConfirmDelete
           action={deletePlan}
           fields={{ id: plan.id }}
