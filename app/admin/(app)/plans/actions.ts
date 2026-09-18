@@ -91,8 +91,9 @@ export async function updatePlan(form: FormData): Promise<void> {
       priceCents,
       stripeProductId,
       stripePriceId,
-      // A plan can't stay active without a price.
-      active: priceCents > 0 ? existing.active : false,
+      // Saving a plan with a valid, synced price makes it live automatically;
+      // without a price (or if the Stripe sync failed) it stays inactive.
+      active: priceCents > 0 && !!stripePriceId,
       updatedAt: new Date(),
     })
     .where(eq(plans.id, id));
