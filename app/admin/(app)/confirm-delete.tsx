@@ -1,7 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { createPortal, useFormStatus } from "react-dom";
+
+// Confirm submit button with a built-in pending state while the action runs.
+function ConfirmSubmit({ label }: { label: React.ReactNode }) {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" className="admin-btn danger" disabled={pending}>
+      {pending ? "Working…" : label}
+    </button>
+  );
+}
 
 // Branded confirm dialog for destructive actions. Renders a trigger button; on
 // click it opens an in-app modal, and only on Confirm does it submit the given
@@ -75,13 +85,16 @@ export default function ConfirmDelete({
               >
                 Cancel
               </button>
-              <form action={action}>
+              <form
+                action={async (fd) => {
+                  await action(fd);
+                  setOpen(false);
+                }}
+              >
                 {Object.entries(fields).map(([k, v]) => (
                   <input key={k} type="hidden" name={k} value={v} />
                 ))}
-                <button type="submit" className="admin-btn danger">
-                  {confirmLabel}
-                </button>
+                <ConfirmSubmit label={confirmLabel} />
               </form>
             </div>
             </div>
