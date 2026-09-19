@@ -2,6 +2,8 @@ import { desc } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { purchases } from "@/lib/db/schema";
 import { formatCents } from "@/lib/money";
+import ConfirmDelete from "../confirm-delete";
+import { refundPurchase, deletePurchase } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +37,7 @@ export default async function AdminPurchasesPage() {
               <th>Date</th>
               <th>Status</th>
               <th>Goals</th>
+              <th aria-label="Actions" />
             </tr>
           </thead>
           <tbody>
@@ -60,11 +63,34 @@ export default async function AdminPurchasesPage() {
                 <td data-label="Goals">
                   {p.customerNote ? p.customerNote : <span className="admin-muted">—</span>}
                 </td>
+                <td className="admin-num">
+                  {p.status === "paid" ? (
+                    <ConfirmDelete
+                      action={refundPurchase}
+                      fields={{ id: p.id }}
+                      title={`Refund ${formatCents(p.amountPaidCents)} to ${p.customerName || p.customerEmail}?`}
+                      message="This refunds the full amount through Stripe. This can't be undone."
+                      triggerClass="admin-btn sm danger"
+                      triggerLabel="Refund"
+                      confirmLabel="Refund"
+                    />
+                  ) : (
+                    <ConfirmDelete
+                      action={deletePurchase}
+                      fields={{ id: p.id }}
+                      title="Delete this record?"
+                      message="Removes the refunded purchase from the list. This can't be undone."
+                      triggerClass="admin-btn sm ghost"
+                      triggerLabel="Delete"
+                      confirmLabel="Delete"
+                    />
+                  )}
+                </td>
               </tr>
             ))}
             {all.length === 0 && (
               <tr>
-                <td colSpan={6} className="admin-empty">
+                <td colSpan={7} className="admin-empty">
                   No purchases yet. Sales from the plans page appear here.
                 </td>
               </tr>
