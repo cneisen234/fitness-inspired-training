@@ -368,6 +368,12 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 1.4em;
 }
 .post-content p { margin: 0; }
+/* Blank lines the author adds between sections are serialized by Tiptap as
+   empty <p></p> (the editor's trailing <br> is a ProseMirror editing artifact,
+   not part of getHTML()). With no content they collapse to zero height and
+   their margins collapse through them, so the spacing seen in the admin editor
+   disappears on the page. Give empty paragraphs a line box to restore it. */
+.post-content p:empty::before { content: "\00a0"; }
 .post-content a {
   color: var(--sky-deep);
   font-weight: 700;
