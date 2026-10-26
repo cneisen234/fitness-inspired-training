@@ -369,7 +369,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 800;
   margin-top: 1.4em;
 }
-.post-content p { margin: 0; }
+.post-content p { margin: 0.85em 0 0; }
 /* Blank lines the author adds between sections are serialized by Tiptap as
    empty <p></p> (the editor's trailing <br> is a ProseMirror editing artifact,
    not part of getHTML()). With no content they collapse to zero height and
