@@ -340,10 +340,12 @@ h1, h2, h3, h4, h5, h6 {
 .post-content {
   font-family: var(--font-nunito-sans), system-ui, sans-serif;
   font-size: 1.125rem;
-  line-height: 1.8;
+  /* Match the admin editor's vertical rhythm so the published page reflects the
+     spacing the author arranges in the WYSIWYG (editor uses 1.7 / 0.85em). */
+  line-height: 1.7;
   color: var(--slate);
 }
-.post-content > * + * { margin-top: 1.25em; }
+.post-content > * + * { margin-top: 0.85em; }
 .post-content h2 {
   font-family: var(--font-nunito), sans-serif;
   color: var(--charcoal);
@@ -385,7 +387,7 @@ h1, h2, h3, h4, h5, h6 {
 .post-content ul, .post-content ol { padding-left: 1.5em; }
 .post-content ul { list-style: disc; }
 .post-content ol { list-style: decimal; }
-.post-content li + li { margin-top: 0.4em; }
+.post-content li + li { margin-top: 0.3em; }
 .post-content blockquote {
   border-left: 4px solid var(--coral);
   padding: 0.2em 0 0.2em 1.1em;
