@@ -5,6 +5,7 @@ import { useEditor, EditorContent, useEditorState } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import { Placeholder } from "@tiptap/extensions";
+import { Indent } from "./indent";
 import { updatePost } from "../actions";
 import { useAutosave, SaveStatus } from "../../autosave";
 import { useUploadThing } from "@/lib/uploadthing-client";
@@ -57,6 +58,7 @@ export default function PostEditor({ post }: { post: Post }) {
       }),
       Image.configure({ inline: false }),
       Placeholder.configure({ placeholder: "Write the post…" }),
+      Indent,
     ],
     content: post.contentHtml || "<p></p>",
     editorProps: { attributes: { "aria-label": "Post body" } },

@@ -376,6 +376,16 @@ h1, h2, h3, h4, h5, h6 {
    their margins collapse through them, so the spacing seen in the admin editor
    disappears on the page. Give empty paragraphs a line box to restore it. */
 .post-content p:empty::before { content: "\00a0"; }
+/* Indentation set with Tab in the editor (data-indent, 1–8). Must match the
+   .admin-editor .ProseMirror rules in admin.css so the page mirrors the editor. */
+.post-content [data-indent="1"] { margin-left: 2em; }
+.post-content [data-indent="2"] { margin-left: 4em; }
+.post-content [data-indent="3"] { margin-left: 6em; }
+.post-content [data-indent="4"] { margin-left: 8em; }
+.post-content [data-indent="5"] { margin-left: 10em; }
+.post-content [data-indent="6"] { margin-left: 12em; }
+.post-content [data-indent="7"] { margin-left: 14em; }
+.post-content [data-indent="8"] { margin-left: 16em; }
 .post-content a {
   color: var(--sky-deep);
   font-weight: 700;

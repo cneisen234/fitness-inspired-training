@@ -18,6 +18,12 @@ export function sanitizePostHtml(dirty: string): string {
     allowedAttributes: {
       a: ["href", "target", "rel"],
       img: ["src", "alt"],
+      // Indent level written by the editor's Indent extension (a small integer).
+      // CSS in globals.css turns it into a left margin on the published post.
+      p: ["data-indent"],
+      h2: ["data-indent"],
+      h3: ["data-indent"],
+      h4: ["data-indent"],
     },
     // Links and images may only point at http(s) (UploadThing images are https).
     allowedSchemes: ["http", "https", "mailto"],

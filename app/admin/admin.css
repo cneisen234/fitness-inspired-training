@@ -702,6 +702,16 @@ textarea.admin-input { resize: vertical; }
 }
 .admin-editor .ProseMirror:focus { outline: none; }
 .admin-editor .ProseMirror > * + * { margin-top: 0.85em; }
+/* Tab indentation (data-indent, 1–8). Must match the .post-content rules in
+   globals.css so the editor mirrors the published post. */
+.admin-editor .ProseMirror [data-indent="1"] { margin-left: 2em; }
+.admin-editor .ProseMirror [data-indent="2"] { margin-left: 4em; }
+.admin-editor .ProseMirror [data-indent="3"] { margin-left: 6em; }
+.admin-editor .ProseMirror [data-indent="4"] { margin-left: 8em; }
+.admin-editor .ProseMirror [data-indent="5"] { margin-left: 10em; }
+.admin-editor .ProseMirror [data-indent="6"] { margin-left: 12em; }
+.admin-editor .ProseMirror [data-indent="7"] { margin-left: 14em; }
+.admin-editor .ProseMirror [data-indent="8"] { margin-left: 16em; }
 .admin-editor .ProseMirror h2 {
   font-family: var(--font-nunito), sans-serif;
   font-size: 1.5rem;
